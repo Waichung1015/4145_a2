@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 
 #connect to MySQL
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://dockeruser:123456@134.190.158.209:3306/assi2'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://dockeruser:123456@192.168.0.14:3306/assi2'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 #init orm database
@@ -94,13 +94,15 @@ class employee_info(db.Model):
     emp_title = db.Column(db.String(45))
     emp_work_time = db.Column(db.Numeric(12,2))
     emp_salary = db.Column(db.Numeric(12,2))
+    emp_dpt = db.Column(db.String(45))
 
-    def __init__(self, empid, empname, emptitle, empworktime, empsalary):
+    def __init__(self, empid, empname, emptitle, empworktime, empsalary, empDpt):
         self.emp_id = empid
         self.emp_name = empname
         self.emp_title = emptitle
         self.emp_work_time = empworktime
         self.emp_salary = empsalary
+        self.emp_dpt = empDpt
 
 class employee_form(db.Model):
     __tablename__ = 'employee_form'
@@ -138,12 +140,16 @@ def broker_login():
         return render_template('broker_userMenu.html', userid=user_id, username=user_name)
 
 #POST/GET - Submit Mortgage Application Form
+#See all information
 #Store information into table
 @app.route('/application.html/<userid>', methods=['GET','POST'])
 def ApplicationInformation(userid):
     result = broker_mortgage_record.query.filter(broker_mortgage_record.user_id==userid).first()
     if request.method == 'GET':
-        return render_template('application.html', userid=userid)
+        if result is None:
+            return render_template('application.html', userid=userid)
+        else:
+            return render_template('ApplicationInformation.html', userid=userid, row=result)
     else:
         userRealName = request.form['userRealName']
         userCompany = request.form['userCompany']
@@ -157,11 +163,11 @@ def ApplicationInformation(userid):
                                               userphone=userPhoneNum, useradd=userAddress, usermort=userMortgage, empid=empid,
                                               emp_name="None", emptitle="None", emp_dpt="None", usersalary=0)
         if result is not None:
-            result.user_realname = userRealName
-            result.user_company = userCompany
-            result.user_phone = userPhoneNum
-            result.user_address = userAddress
-            result.user_mortgage = userMortgage
+            result.user_realname = request.form['userRealName']
+            result.user_company = request.form['userCompany']
+            result.user_phone = request.form['userPhoneNum']
+            result.user_address = request.form['userAddress']
+            result.user_mortgage = request.form['userMortgage']
             db.session.commit()
         else:
             db.session.add(create_input)
@@ -170,13 +176,18 @@ def ApplicationInformation(userid):
             result.have_submitted = True
             db.session.commit()
             #NEED AN ERROR PAGE / CONFIRMATION PAGE
+        username = broker_userinfo.query.filter(broker_userinfo.user_id==userid).first().user_name
 
-        return render_template('broker_userMenu.html',userid=userid)
+        return render_template('broker_userMenu.html',userid=userid, username=username)
+
+@app.route('/broker_main.html/<userid>', methods=['GET'])
+def GoBack(userid):
+    username = broker_userinfo.query.filter(broker_userinfo.user_id == userid).first().user_name
+    return render_template('broker_userMenu.html', userid=userid, username=username)
 
 #GET - Mortgage Application Status
 @app.route('/user_status.html/<userid>', methods=['GET'])
 def broker_MortgageStatus(userid):
-    #userid = request.args.get('userid')
     result = broker_mortgage_record.query.filter(broker_mortgage_record.user_id == userid).first()
     result2 = broker_userinfo.query.filter(broker_userinfo.user_id==userid).first()
     username = result2.user_name
@@ -196,16 +207,22 @@ def Authentication():
         empid = request.form['empID']
         result = employee_info.query.filter(employee_info.emp_id==empid).first()
         if result is not None:
-            return render_template('form.html', empid=empid)
+            row = employee_form.query.filter(employee_form.emp_id==empid).first()
+            if row is None:
+                return render_template('form.html', empid=empid)
+            else:
+                return render_template('FormInformation.html', empid=empid, row=row)
         #NEED A ERROR PAGE HERE
 
 #GET/POST - Employee Form
 @app.route('/form.html/<empid>', methods=['GET','POST'])
 def EmployerPortalForm(empid):
-    print("error")
     result = employee_form.query.filter(employee_form.emp_id==empid).first()
     if request.method == 'GET':
-        return render_template('form.html',empid=empid, rows=result)
+        if result is not None:
+            return render_template('FormInformation.html',empid=empid, row=result)
+        else:
+            return render_template('form.html', empid=empid)
     else:
         mortgageID = request.form['mortgageID']
         url = request.form['url']
@@ -222,26 +239,40 @@ def EmployerPortalForm(empid):
             return render_template('emp_main.html', rows=result)
 
 #GET/POST Employer Form Submit Button
-@app.route('/empForm.html', methods=['GET','POST'])
-def EmpForm():
+@app.route('/empForm.html/<empid>', methods=['GET','POST'])
+def EmpForm(empid):
+    result = employer_form.query.filter(employer_form.employee_id==empid).first()
     if request.method == 'GET':
         return render_template('empForm.html')
     else:
-        employerName = request.form['employerName']
-        employerTitle = request.form['employerTitle']
-        employerDepartment = request.form['employerDepartment']
-        employeeName = request.form['employeeName']
-        employeeID = request.form['employeeID']
-        create_input = employer_form(empname=employerName, emptitle=employerTitle,
+        if result is None:
+            print("error")
+            employerName = request.form['employerName']
+            employerTitle = request.form['employerTitle']
+            employerDepartment = request.form['employerDepartment']
+            employeeName = request.form['employeeName']
+            employeeID = request.form['employeeID']
+            employeeID = int(employeeID)
+            create_input = employer_form(empname=employerName, emptitle=employerTitle,
                                  empdpt=employerDepartment, employeename=employeeName,
                                  employeeid=employeeID)
-        db.session.add(create_input)
-        db.session.commit()
-        result = employer_form.query.filter(employer_form.employee_id == employeeID).first()
-        result.done = True
-        db.session.commit()
+            db.session.add(create_input)
+            db.session.commit()
+            result = employer_form.query.filter(employer_form.employee_id == employeeID).first()
+            result.done = True
+            db.session.commit()
 
-        return render_template('emp_main.html')
+            return render_template('emp_main.html')
+        else:
+            #EDIT
+            print(result.employee_id)
+            result.employer_name = request.form['employerName']
+            result.employer_title = request.form['employerTitle']
+            result.emp_dpt = request.form['employerDepartment']
+            result.employee_name = request.form['employeeName']
+            result.employee_id = int(request.form['employeeID'])
+            db.session.commit()
+            return render_template('emp_main.html')
 
 #GET/POST Employer Help Page
 @app.route('/help.html', methods=['GET','POST'])
@@ -250,9 +281,15 @@ def Help():
         return render_template('help.html')
     else:
         name = request.form['empName']
-        result = employee_info.query.filter(employee_info.emp_name==name).first()
+        dpt = request.form['empDpt']
+        result = employee_info.query.filter(employee_info.emp_name==name and employee_info.emp_dpt==dpt).first()
         if result is not None:
-            return render_template('empForm.html')
+            empid = result.emp_id
+            forminfo = employer_form.query.filter(employer_form.employee_id == empid).first()
+            if result is not None:
+                return render_template('EmployerFormInformation.html', empid=empid, row=forminfo)
+            else:
+                return render_template('empForm.html', empid=empid)
 
 #POST Agree Button
 @app.route('/Agree.html/<empid>', methods=['POST'])
@@ -267,6 +304,7 @@ def Agree(empid):
     result2.employer_title = result1.employer_title
     result2.user_salary = result3.emp_salary
     result2.have_emp_help = True
+    result2.form_id = result1.form_id
     db.session.commit()
     return render_template('emp_main.html')
 
