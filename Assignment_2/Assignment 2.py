@@ -258,7 +258,7 @@ def EmpForm(empid):
                                  employeeid=employeeID)
             db.session.add(create_input)
             db.session.commit()
-            result = employer_form.query.filter(employer_form.employee_id == employeeID).first()
+            result = employer_form.query.filter(employer_form.emp_id == employeeID).first()
             result.done = True
             db.session.commit()
 
@@ -283,10 +283,10 @@ def Help():
         name = request.form['empName']
         dpt = request.form['empDpt']
         result = employee_info.query.filter(employee_info.emp_name==name and employee_info.emp_dpt==dpt).first()
+        empid = result.emp_id
         if result is not None:
-            empid = result.emp_id
             forminfo = employer_form.query.filter(employer_form.employee_id == empid).first()
-            if result is not None:
+            if forminfo is not None:
                 return render_template('EmployerFormInformation.html', empid=empid, row=forminfo)
             else:
                 return render_template('empForm.html', empid=empid)
