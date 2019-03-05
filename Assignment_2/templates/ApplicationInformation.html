@@ -10,13 +10,13 @@
     <div align="center">
         <h2 style='"Comic Sans MS", cursive, sans-serif;font-size:150%;line-height: 4.5;'>Application</h2>
         <form method="post" action="{{ url_for('ApplicationInformation', userid=userid) }}" >
-                        <input type="text" name="userRealName" placeholder="{{ row.user_realname }}" color="black" style="height: 40px;width:400px"/><br>
-                        <input type="text" name="userCompany" placeholder="{{ row.user_company }}" color="black" style="height: 40px;width:400px" /><br>
-                        <input type="text" name="empID" placeholder="{{ row.emp_id }}" color="black" style="..."/><br>
-                        <input type="text" name="userPhoneNum" placeholder="{{ row.user_phone }}" color="black" style="height: 40px;width:400px" /><br>
-                        <input type="text" name="userAddress" placeholder="{{ row.user_address }}" color="black" style="height: 40px;width:400px" /><br>
-                        <input type="text" name="userMortgage" placeholder="{{ row.user_mortgage }}" color="black" style="height: 40px;width:400px" /><br>
-                        <input type="submit" value="All Information Changed? Submit" style="height: 40px;width:100px;font-size:80px"/>
+                        <input type="text" name="userRealName" placeholder="{{ row.user_realname }}" color="black" style="height: 40px;width:400px" required="" oninvalid="this.setCustomValidity('Please enter all required info')"/><br>
+                        <input type="text" name="userCompany" placeholder="{{ row.user_company }}" color="black" style="height: 40px;width:400px" required="" oninvalid="this.setCustomValidity('Please enter all required info')"/><br>
+                        <input type="text" name="empID" placeholder="{{ row.emp_id }}" color="black" style="..." required="" oninvalid="this.setCustomValidity('Please enter all required info')"/><br>
+                        <input type="text" name="userPhoneNum" placeholder="{{ row.user_phone }}" color="black" style="height: 40px;width:400px" required="" oninvalid="this.setCustomValidity('Please enter all required info')"/><br>
+                        <input type="text" name="userAddress" placeholder="{{ row.user_address }}" color="black" style="height: 40px;width:400px" required="" oninvalid="this.setCustomValidity('Please enter all required info')"/><br>
+                        <input type="text" name="userMortgage" placeholder="{{ row.user_mortgage }}" color="black" style="height: 40px;width:400px" required="" oninvalid="this.setCustomValidity('Please enter all required info')"/><br>
+                        <input type="submit" value="All Information Changed? Submit" />
             </form>
     </div>
 <br>

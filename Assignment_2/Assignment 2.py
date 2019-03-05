@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 
 #connect to MySQL
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://dockeruser:123456@192.168.0.14:3306/assi2'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://dockeruser:123456@134.190.158.250:3306/assi2'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 #init orm database
@@ -122,10 +122,14 @@ def broker_home():
     return render_template('broker_main.html')
 
 #GET brokerUserMenu Page
-@app.route('/broker_userMenu.html/<userid>', methods=['GET'])
+@app.route('/broker_userMenu.html/<userid>', methods=['GET','POST'])
 def broker_userMenu(userid):
-    username = broker_userinfo.query.filter(broker_userinfo.user_id==userid).first().user_name
-    return render_template('broker_userMenu.html', userid=userid, username=username)
+    if request.method == 'GET':
+        username = broker_userinfo.query.filter(broker_userinfo.user_id==userid).first().user_name
+        return render_template('broker_userMenu.html', userid=userid, username=username)
+    else:
+        username = broker_userinfo.query.filter(broker_userinfo.user_id == userid).first().user_name
+        return render_template('broker_userMenu.html', userid=userid, username=username)
 
 #POST - brokerUserMenu Page
 #compare pwd - login
@@ -168,17 +172,24 @@ def ApplicationInformation(userid):
             result.user_phone = request.form['userPhoneNum']
             result.user_address = request.form['userAddress']
             result.user_mortgage = request.form['userMortgage']
+            result.emp_id = request.form['empID']
             db.session.commit()
+            username = broker_userinfo.query.filter(broker_userinfo.user_id == userid).first().user_name
+            return render_template('broker_userMenu.html', userid=userid, username=username)
         else:
             db.session.add(create_input)
             db.session.commit()
             result = broker_mortgage_record.query.filter(broker_mortgage_record.user_id == userid).first()
             result.have_submitted = True
             db.session.commit()
-            #NEED AN ERROR PAGE / CONFIRMATION PAGE
-        username = broker_userinfo.query.filter(broker_userinfo.user_id==userid).first().user_name
+            mortgageid = broker_mortgage_record.query.filter(broker_mortgage_record.user_id == userid).first().mortgage_id
+            return render_template('Confirmation.html', userid=userid, mortgageid=mortgageid)
 
-        return render_template('broker_userMenu.html',userid=userid, username=username)
+@app.route('/Confirmation/<userid>', methods=['GET'])
+def Confirmation(userid):
+    username = broker_userinfo.query.filter(broker_userinfo.user_id == userid).first().user_name
+    return render_template('broker_userMenu.html', userid=userid, username=username)
+
 
 @app.route('/broker_main.html/<userid>', methods=['GET'])
 def GoBack(userid):
@@ -258,7 +269,7 @@ def EmpForm(empid):
                                  employeeid=employeeID)
             db.session.add(create_input)
             db.session.commit()
-            result = employer_form.query.filter(employer_form.emp_id == employeeID).first()
+            result = employer_form.query.filter(employer_form.employee_id == employeeID).first()
             result.done = True
             db.session.commit()
 
@@ -283,8 +294,8 @@ def Help():
         name = request.form['empName']
         dpt = request.form['empDpt']
         result = employee_info.query.filter(employee_info.emp_name==name and employee_info.emp_dpt==dpt).first()
-        empid = result.emp_id
         if result is not None:
+            empid = result.emp_id
             forminfo = employer_form.query.filter(employer_form.employee_id == empid).first()
             if forminfo is not None:
                 return render_template('EmployerFormInformation.html', empid=empid, row=forminfo)
@@ -329,4 +340,4 @@ def ViewAgree(empid):
     return render_template('Agree.html',empid=empid)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')

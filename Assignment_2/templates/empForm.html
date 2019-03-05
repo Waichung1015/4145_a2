@@ -10,11 +10,11 @@
     <div align="center">
         <h2 style='"Comic Sans MS", cursive, sans-serif;font-size:150%;line-height: 4.5;'>Employer Form</h2>
         <form method="post" action="{{ url_for('EmpForm', empid=empid) }}" >
-                        <input type="text" name="employerName" placeholder="Your Name.." color="grey" style="height: 40px;width:500px"/><br>
-                        <input type="text" name="employerTitle" placeholder="Your title.." color="grey" style="height: 40px;width:500px" /><br>
-                        <input type="text" name="employerDepartment" placeholder="Your department.." color="grey" style="height: 40px;width:500px" /><br>
-                        <input type="text" name="employeeName" placeholder=" The employees you help: enter employee name.." color="grey" style="height: 40px;width:500px" /><br>
-                        <input type="text" name="employeeID" placeholder="The employee's ID.." color="grey" style="..."><br>
+                        <input type="text" name="employerName" placeholder="Your Name.." color="grey" style="height: 40px;width:500px" required="" oninvalid="this.setCustomValidity('Please enter all required info')"/><br>
+                        <input type="text" name="employerTitle" placeholder="Your title.." color="grey" style="height: 40px;width:500px" required="" oninvalid="this.setCustomValidity('Please enter all required info')"/><br>
+                        <input type="text" name="employerDepartment" placeholder="Your department.." color="grey" style="height: 40px;width:500px" required="" oninvalid="this.setCustomValidity('Please enter all required info')"/><br>
+                        <input type="text" name="employeeName" placeholder=" The employees you help: enter employee name.." color="grey" style="height: 40px;width:500px" required="" oninvalid="this.setCustomValidity('Please enter all required info')"/><br>
+                        <input type="text" name="employeeID" placeholder="The employee's ID.." color="grey" style="..." required="" oninvalid="this.setCustomValidity('Please enter all required info')"/><br>
                         <input type="submit" value="Submit"/>
             </form>
     </div>

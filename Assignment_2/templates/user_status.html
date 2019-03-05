@@ -11,12 +11,17 @@
         <h2 style='"Comic Sans MS", cursive, sans-serif;font-size:150%;line-height: 4.5;'>Status</h2>
          <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
         <div class="progress" style="width:800px">
-            <div class="progress-bar bg-success"  style="width:0%">0%</div><!-- change as which filled -->
+            {%if rows.have_submitted ==True%}
+            <div class="progress-bar bg-success"  style="width:50%">50%</div><!-- change as which filled -->
+            {%endif%}
+            {%if rows.have_emp_help ==True and rows.have_submitted == True%}
+            <div class="progress-bar bg-success"  style="width:100%">100%</div>
+            {%endif%}
         </div>
         <ul style="line-height:3">
             <ol>Employee Form submission: {{ rows.have_submitted }}</ol>
             <ol>Employer filled the form: {{ rows.have_emp_help }}</ol>
-            <ol>broker passed your application</ol></ul>
+            </ul>
             <ol><form action="{{ url_for('broker_userMenu', userid=userid) }}" method="get">
                <button type="submit">return to user menu</button>
       </form></ol>
