@@ -44,7 +44,8 @@ emp_id int auto_increment primary key,
 emp_name varchar(45),
 emp_title varchar(45),
 emp_work_time decimal,
-emp_salary decimal
+emp_salary decimal,
+emp_dpt varchar(45)
 );
 
 create table if not exists employee_form(
@@ -57,5 +58,8 @@ foreign key (emp_id) references employee_info(emp_id)
 );
 
 insert into broker_userinfo (user_name, user_pwd, user_email) values ('name', 'pwd', 'name@email.com');
-insert into employee_info (emp_name, emp_title, emp_work_time, emp_salary) values ('Florence', 'employee', 40, 5486);
-insert into employee_info (emp_name, emp_title, emp_work_time, emp_salary) values ('Employer', 'employer', 40, 8000);
+insert into employee_info (emp_name, emp_title, emp_work_time, emp_salary, emp_dpt) values ('Florence', 'employee', 40, 5486, 'department-02');
+insert into employee_info (emp_name, emp_title, emp_work_time, emp_salary, emp_dpt) values ('Employer', 'employer', 40, 8000, 'department-01');
+insert into employee_info (emp_name, emp_title, emp_work_time, emp_salary, emp_dpt) values ('Sijia Zhou', 'employee', 40, 6666, 'department-03');
+insert into employee_info (emp_name, emp_title, emp_work_time, emp_salary, emp_dpt) values ('Ivy', 'employ', 40, 7777, 'department-04');
+insert into employee_info (emp_name, emp_title, emp_work_time, emp_salary, emp_dpt) values ('BBB', 'employee', 40, 7777, 'department-04');
