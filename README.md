@@ -1,5 +1,7 @@
 # 4145_a2
 Group3 assignment2 
+Group Member:
+Zixuan Liu: Backend 
+Huicong(Ivy) Wu: Frontend
+Charley LeBlanc: DB
 
-Flask==1.0.2
-Flask-SQLAlchemy==2.3.2
