@@ -6,8 +6,8 @@
     <div align="center">
         <h2 style='"Comic Sans MS", cursive, sans-serif;font-size:150%;line-height: 4.5;'>Get what you want immediately</h2>
         <form method="post" action="{{ url_for('broker_login') }}" >
-                        <input type="text" name="email" placeholder="email.." color="grey" style="height: 40px;width:200px" required="" oninvalid="this.setCustomValidity('Please enter all required info')"/>
-                        <input type="text" name="password" placeholder="password.." color="grey" style="height: 40px;width:200px" required="" oninvalid="this.setCustomValidity('Please enter all required info')"/>
+                        <input type="text" name="email" placeholder="email.." color="grey" style="height: 40px;width:200px" required="" oninvalid="this.setCustomValidity('Please enter all required info')" oninput="this.setCustomValidity('')"/>
+                        <input type="text" name="password" placeholder="password.." color="grey" style="height: 40px;width:200px" required="" oninvalid="this.setCustomValidity('Please enter all required info')" oninput="this.setCustomValidity('')"/>
                         <input type="submit" value="Sign in" />
             </form>
         <p style='"Comic Sans MS", cursive, sans-serif'> No account? <a href="./broker_signUp.html">Sign up </a>here</p>
